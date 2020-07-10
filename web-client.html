@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>qt-chat-client-plain</title>
+    <script type="text/javascript">
+
+function getRandomInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
+}
+
+    var server = "http://127.0.0.1:5000";
+
+    var myName;
+    var myPassword;
+
+    var users = new Map();
+    var usercount = 0;
+    var request_send = new XMLHttpRequest();
+    var request_recv = new XMLHttpRequest();
+
+    var after = 0;
+
+    function request_messages () {
+        method = "GET";
+        url = server+"/messages?after="+after;
+        request_recv.open(method, url, true);
+        request_recv.onreadystatechange = function () {
+            if(this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                var messages = JSON.parse(this.responseText).messages;
+                for(i = 0; i < messages.length; i++) {
+                    var escaped_name = messages[i].name.replace(/&/, "&amp;").replace(/</, "&lt;").replace(/>/, "&gt;").replace(/"/, "&quot;"); // "
+                    var escaped_text = messages[i].text.replace(/&/, "&amp;").replace(/</, "&lt;").replace(/>/, "&gt;").replace(/"/, "&quot;"); // "
+                    var date = new Date(messages[i].time * 1000);
+                    localdate = new Date(date.getTime() - date.getTimezoneOffset()*60*1000);
+                    var time = localdate.toISOString().substr(11, 8);
+                    if (messages[i].name == myName) {
+                        outchat('<div class="msg"> <div class="bubble alt"><div class="txt">'+
+                                '<span class="name alt">'+escaped_name+
+                                '</span><span class="timestamp">time</span><br/>'+
+                                '<p class="message">'+escaped_text+
+                                '</p></div><div class="bubble-arrow alt"></div></div></div>');
+
+                    } else {
+                    outchat('<div class="msg"> <div class="bubble"><div class="txt">'+
+                            '<span class="name">'+escaped_name+
+                            '</span><span class="timestamp">'+time+'</span><br/>'+
+                            '<p class="message">'+escaped_text+
+                            '</p></div><div class="bubble-arrow"></div></div></div>');
+                    }
+                    if (after<messages[i].time) {
+                        after=messages[i].time
+                    }
+                }
+            };
+        }
+        request_recv.send();
+    }
+
+    function init() {
+        myName = prompt("Имя пользователя:", "Пользователь"+getRandomInt(100000));
+        if (myName == null) { myName = "Пользователь"+getRandomInt(100000)}
+        myPassword = prompt("Пароль:", "123456");
+        if (myPassword == null) { myPassword = "123456"}
+        setInterval(request_messages, 1000);
+    }
+
+
+
+    function onSubmit() {
+        var input = document.getElementById("input");
+        method = "POST";
+        url = server+"/send";
+        var json = JSON.stringify({
+            name: myName,
+            password: myPassword,
+            text: input.value
+        });
+        request_send.open(method, url, true);
+        request_send.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+        request_send.onreadystatechange = function () {
+            if(this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+            };
+        }
+        request_send.send(json);
+        input.value = "";
+        input.focus();
+    }
+
+    function outchat(str) {
+      var chat = document.getElementById("chat");
+      var escaped = str;
+      chat.innerHTML = escaped + "<br>" + chat.innerHTML;
+    }
+
+    </script>
+    <style type="text/css">
+
+ body {
+	 background: #ece5dd;
+	 font-family: "Helvetica Neue", Helvetica;
+	/*, sans-serif*/
+}
+ .container {
+	 width: 75%;
+	 margin: 0 auto;
+}
+ .msg {
+	 width: 100%;
+	 height: auto;
+	 display: block;
+	 overflow: hidden;
+}
+ .msg .bubble {
+	 float: left;
+	 max-width: 75%;
+	 width: auto;
+	 height: auto;
+	 display: block;
+	 background: #ebebeb;
+	 border-radius: 5px;
+	 position: relative;
+	 margin: 10px 0 3px 25px;
+	 box-shadow: 0px 2px 1px rgba(0, 0, 0, 0.2);
+}
+ .msg .bubble.alt {
+	 margin: 10px 25px 3px 0px;
+	 background: #dcf8c6;
+	 float: right;
+}
+ .msg .bubble.follow {
+	 margin: 2px 0 3px 25px;
+}
+ .msg .bubble.altfollow {
+	 margin: 2px 25px 3px 0px;
+	 background: #dcf8c6;
+	 float: right;
+}
+ .msg .bubble .txt {
+	 padding: 8px 0 8px 0;
+	 width: 100%;
+}
+ .msg .bubble .txt .name {
+	 font-weight: 600;
+	 font-size: 14px;
+	 display: inline-table;
+	 padding: 0 0 0 15px;
+	 margin: 0 0 4px 0;
+	 color: #3498db;
+}
+ .msg .bubble .txt .name span {
+	 font-weight: normal;
+	 color: #b3b3b3;
+	 overflow: hidden;
+}
+ .msg .bubble .txt .name.alt {
+	 color: #2ecc51;
+}
+ .msg .bubble .txt .message {
+	 font-size: 14px;
+	 font-weight: 500;
+	 padding: 0 15px 0 15px;
+	 margin: auto;
+	 color: #2b2b2b;
+	 display: table;
+         float: left;
+}
+ .msg .bubble .txt .timestamp {
+	 font-size: 11px;
+	 margin: auto;
+	 padding: 0 15px 0 0;
+	 display: table;
+	 float: right;
+	 position: relative;
+	 text-transform: uppercase;
+	 color: #999;
+}
+ .msg .bubble .bubble-arrow {
+	 position: absolute;
+	 float: left;
+	 left: -11px;
+	 top: 0px;
+}
+ .msg .bubble .bubble-arrow.alt {
+	 bottom: 20px;
+	 left: auto;
+	 right: 4px;
+	 float: right;
+}
+ .msg .bubble .bubble-arrow:after {
+	 content: "";
+	 position: absolute;
+	 border-top: 15px solid #ebebeb;
+	 border-left: 15px solid transparent;
+	 border-radius: 4px 0 0 0px;
+	 width: 0;
+	 height: 0;
+}
+ .msg .bubble .bubble-arrow.alt:after {
+	 border-top: 15px solid #dcf8c6;
+	 transform: scaleX(-1);
+}
+ @media only screen and (max-width: 450px) {
+	 .container {
+		 width: 100%;
+	}
+	 .timestamp {
+		 display: none;
+		 color: red;
+	}
+}
+
+</style>
+
+</head>
+<body onload="init();">
+  <table width="100%"><tr><td>
+  <form onsubmit="onSubmit(); return false;">
+    <input type="text" id="input">
+    <input type="submit" value="Отправить">
+  </form></td></tr></table>
+  <table><tr><td valign="top"><div id=chat style="width: 500px;">
+</div></td></tr></table>
+</body>
+</html>
