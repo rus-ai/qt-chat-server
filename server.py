@@ -10,6 +10,9 @@ starttime = dt.datetime.now()
 known_clients = set([])
 
 app = Flask(__name__)
+
+# Это нужно, если html клиент запускается с локального диска без загрузки на сервер
+# Иначе срабатывает защита от cross-site-scripting
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
