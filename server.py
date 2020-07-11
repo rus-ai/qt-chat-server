@@ -1,5 +1,4 @@
-from flask import Flask, request, abort
-from flask_cors import CORS, cross_origin
+from flask import Flask, request, abort, send_from_directory
 
 import datetime as dt
 import time
@@ -10,11 +9,6 @@ starttime = dt.datetime.now()
 known_clients = set([])
 
 app = Flask(__name__)
-
-# Это нужно, если html клиент запускается с локального диска без загрузки на сервер
-# Иначе срабатывает защита от cross-site-scripting
-cors = CORS(app)
-app.config['CORS_HEADERS'] = 'Content-Type'
 
 messages = []
 
@@ -36,7 +30,13 @@ def filter_messages(elements, key, min_value):
 @app.route("/")
 def index_view():
     log_client_ip(request.remote_addr)
-    return f"Welcome to {servername}.For current status click <a href='/status'>here</a>"
+    return f"Welcome to {servername}. For current status click <a href='/status'>here</a><br/>For web-client click <a href='/webclient'>here</a>"
+
+
+@app.route("/webclient")
+def webclient_view():
+    log_client_ip(request.remote_addr)
+    return send_from_directory(directory=".", filename='web-client.html')
 
 
 @app.route("/status")
