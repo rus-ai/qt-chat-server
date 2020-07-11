@@ -78,4 +78,4 @@ def messages_view():
 
 
 messages.append({'name': 'qt-chat-server', 'time': time.time(), 'text': 'Server started'})
-app.run()
+app.run(host='0.0.0.0')
