@@ -1,27 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>qt-chat-client-plain</title>
-    <script type="text/javascript">
+<meta charset="UTF-8">
+<title>qt-chat-client-plain</title>
+<script type="text/javascript">
 
 function getRandomInt(max) {
   return Math.floor(Math.random() * Math.floor(max));
 }
 
-    var server = ""; // Server and port on some as web client server, may be "http://server.com:5000";
+var server = ""; // Server and port on some as web client server, may be "http://server.com:5000";
 
-    var myName;
-    var myPassword;
+var myName;
+var myPassword;
 
-    var users = new Map();
-    var usercount = 0;
-    var request_send = new XMLHttpRequest();
-    var request_recv = new XMLHttpRequest();
+var users = new Map();
+var usercount = 0;
+var request_send = new XMLHttpRequest();
+var request_recv = new XMLHttpRequest();
 
-    var after = 0;
+var after = 0;
 
-    function request_messages () {
+function request_messages () {
         method = "GET";
         url = server+"/messages?after="+after;
         request_recv.open(method, url, true);
@@ -55,19 +55,17 @@ function getRandomInt(max) {
             };
         }
         request_recv.send();
-    }
+}
 
-    function init() {
+function init() {
         myName = prompt("Имя пользователя:", "Пользователь"+getRandomInt(100000));
         if (myName == null) { myName = "Пользователь"+getRandomInt(100000)}
         myPassword = prompt("Пароль:", "123456");
         if (myPassword == null) { myPassword = "123456"}
         setInterval(request_messages, 1000);
-    }
+}
 
-
-
-    function onSubmit() {
+function onSubmit() {
         var input = document.getElementById("input");
         method = "POST";
         url = server+"/send";
@@ -85,14 +83,14 @@ function getRandomInt(max) {
         request_send.send(json);
         input.value = "";
         input.focus();
-    }
+}
 
-    function outchat(str) {
+function outchat(str) {
       var chat = document.getElementById("chat");
       var escaped = str;
       chat.innerHTML = chat.innerHTML + "<br>" + escaped;
       chat.scrollTop = chat.scrollHeight;
-    }
+}
 
 </script>
 <style type="text/css">
@@ -100,12 +98,13 @@ function getRandomInt(max) {
 .scrolled {
     position: absolute;
     top: 40px;
-    bottom: 20px;
+    bottom: 60px;
     left: 0;
     width: 100%;
     overflow-x: hidden;
     overflow-y: scroll;
-    }
+}
+
 
 #main {
       height: 100%;
@@ -117,15 +116,22 @@ position: absolute;
     left: 0;
     z-index: 10;
     width: 100%;
-    height: 60px;
+    height: 20px;
 }
 
 #sendform {
     position: absolute;
     bottom: 0;
+    width: 100%;
     vertical-align: middle;
     display: inline-block;
+    padding: 15px 15px 15px 15px;
 }
+
+#input {
+    width: 80%;
+}
+
 
 body, html {
     overflow: hidden;
@@ -137,14 +143,13 @@ body {
 	 font-family: "Helvetica Neue", Helvetica;
 	/*, sans-serif*/
 }
-
- .msg {
+.msg {
 	 width: 100%;
 	 height: auto;
 	 display: block;
 	 overflow: hidden;
 }
- .msg .bubble {
+.msg .bubble {
 	 float: left;
 	 max-width: 75%;
 	 width: auto;
@@ -156,24 +161,24 @@ body {
 	 margin: 10px 0 3px 25px;
 	 box-shadow: 0px 2px 1px rgba(0, 0, 0, 0.2);
 }
- .msg .bubble.alt {
+.msg .bubble.alt {
 	 margin: 10px 25px 3px 0px;
 	 background: #dcf8c6;
 	 float: right;
 }
- .msg .bubble.follow {
+.msg .bubble.follow {
 	 margin: 2px 0 3px 25px;
 }
- .msg .bubble.altfollow {
+.msg .bubble.altfollow {
 	 margin: 2px 25px 3px 0px;
 	 background: #dcf8c6;
 	 float: right;
 }
- .msg .bubble .txt {
+.msg .bubble .txt {
 	 padding: 8px 0 8px 0;
 	 width: 100%;
 }
- .msg .bubble .txt .name {
+.msg .bubble .txt .name {
 	 font-weight: 600;
 	 font-size: 14px;
 	 display: inline-table;
@@ -181,15 +186,15 @@ body {
 	 margin: 0 0 4px 0;
 	 color: #3498db;
 }
- .msg .bubble .txt .name span {
+.msg .bubble .txt .name span {
 	 font-weight: normal;
 	 color: #b3b3b3;
 	 overflow: hidden;
 }
- .msg .bubble .txt .name.alt {
+.msg .bubble .txt .name.alt {
 	 color: #2ecc51;
 }
- .msg .bubble .txt .message {
+.msg .bubble .txt .message {
 	 font-size: 14px;
 	 font-weight: 500;
 	 padding: 0 15px 0 15px;
@@ -198,29 +203,29 @@ body {
 	 display: table;
          float: left;
 }
- .msg .bubble .txt .timestamp {
+.msg .bubble .txt .timestamp {
 	 font-size: 11px;
 	 margin: auto;
-	 padding: 0 15px 0 0;
+     padding: 3px 15px 0 15px;
 	 display: table;
 	 float: right;
 	 position: relative;
 	 text-transform: uppercase;
 	 color: #999;
 }
- .msg .bubble .bubble-arrow {
+.msg .bubble .bubble-arrow {
 	 position: absolute;
 	 float: left;
 	 left: -11px;
 	 top: 0px;
 }
- .msg .bubble .bubble-arrow.alt {
+.msg .bubble .bubble-arrow.alt {
 	 bottom: 20px;
 	 left: auto;
 	 right: 4px;
 	 float: right;
 }
- .msg .bubble .bubble-arrow:after {
+.msg .bubble .bubble-arrow:after {
 	 content: "";
 	 position: absolute;
 	 border-top: 15px solid #ebebeb;
@@ -229,7 +234,7 @@ body {
 	 width: 0;
 	 height: 0;
 }
- .msg .bubble .bubble-arrow.alt:after {
+.msg .bubble .bubble-arrow.alt:after {
 	 border-top: 15px solid #dcf8c6;
 	 transform: scaleX(-1);
 }
